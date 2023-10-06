@@ -12,6 +12,7 @@ type State = {
         "evCharging": number;
         "pool": number;
         "gym": number;
+        "dogPark": number;
         "maintenance": number;
         "washerDryer": number;
         "stainlessSteel": number;
@@ -34,6 +35,7 @@ type ContextProps = {
         "evCharging": number;
         "pool": number;
         "gym": number;
+        "dogPark": number;
         "maintenance": number;
         "washerDryer": number;
         "stainlessSteel": number;
@@ -57,6 +59,7 @@ export const AppContext = createContext<ContextProps>({
         "evCharging": 0.5,
         "pool": 0.5,
         "gym": 0.5,
+        "dogPark": 0.5,
         "maintenance": 0.5,
         "washerDryer": 0.5,
         "stainlessSteel": 0.5,
@@ -92,6 +95,7 @@ export function StepFormProvider({ children } : { children: React.ReactNode }) {
             "evCharging": 0.5,
             "pool": 0.5,
             "gym": 0.5,
+            "dogPark": 0.5,
             "maintenance": 0.5,
             "washerDryer": 0.5,
             "stainlessSteel": 0.5,

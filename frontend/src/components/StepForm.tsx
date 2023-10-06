@@ -6,13 +6,15 @@ import React from "react";
 import { AppContext } from "@/app/Context";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
+import { useRouter } from "next/navigation";
 
-const labels = ["Address", 'Attributes', 'Confirm']
+const labels = ["Attributes", 'Amenities', 'Confirm']
 const attributes = [
     {attr: 'dogsAllowed', label: 'Dogs Allowed?'},
     {attr: 'catsAllowed', label: 'Cats Allowed?'},
     {attr: 'pool', label: 'Pool?'},
     {attr: 'gym', label: 'Gym?'},
+    {attr: 'dogPark', label: 'Dog Park?'},
     {attr: 'trashValet', label: 'Door-to-Door Trash Pickup?'},
     {attr: 'evCharging', label: 'EV Charging Stations?'},
     {attr: 'maintenance', label: '24hr Maintenance?'},
@@ -23,17 +25,16 @@ const attributes = [
 const handleSteps = (step: number) => {
     switch (step) {
         case 0:
-            return <AddressForm />;
+            return <AttributeForm />;
         case 1:
-            return <AttributesForm />;
+            return <AmenityForm />;
         default:
-            return <AddressForm />;
+            return <ConfirmForm />;
     }
 };
 
-const AddressForm = () => {
+const AttributeForm = () => {
     const { formValues, activeStep, handleChange, handleNext, handleBack } = React.useContext(AppContext);
-    const showBack = activeStep > 0;
     const showNext = activeStep < labels.length - 1;
     const showSubmit = activeStep === labels.length - 1;
     return (
@@ -93,19 +94,14 @@ const AddressForm = () => {
                 </Grid>
             </Box>
             <Box sx={{display:'flex', justifyContent:"flex-end"}}>
-                {showBack && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleBack}>Back</Button>}
-                {showNext && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleNext}>Next</Button>}
-                {showSubmit && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary">Submit</Button>}
+                <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleNext}>Next</Button>
             </Box>
         </>
     )
 }
 
-const AttributesForm = () => {
+const AmenityForm = () => {
     const { formValues, activeStep, handleChange, handleNext, handleBack } = React.useContext(AppContext);
-    const showBack = activeStep > 0;
-    const showNext = activeStep < labels.length - 1;
-    const showSubmit = activeStep === labels.length - 1;
     return (
         <>
             <Box sx={{my: 5}}>
@@ -130,12 +126,83 @@ const AttributesForm = () => {
                 </Grid>
             </Box>
             <Box sx={{display:'flex', justifyContent:"flex-end"}}>
-                {showBack && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleBack}>Back</Button>}
-                {showNext && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleNext}>Next</Button>}
-                {showSubmit && <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary">Submit</Button>}
+                <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleBack}>Back</Button>
+                <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleNext}>Next</Button>
             </Box>
         </>
     )
+};
+
+const ConfirmForm = () => {
+    const { formValues, handleBack } = React.useContext(AppContext);
+    const router = useRouter();
+    const handleSubmit = () => {
+        console.log(formValues);
+        fetch('http://127.0.0.1:5000/predict', {
+            method: 'POST',
+            body: JSON.stringify(formValues),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            if (res.ok) {
+                console.log('Success');
+                return res.json();
+            } else {
+                console.log('Failure');
+            }
+        }).then(data => {
+            localStorage.setItem('prediction', JSON.stringify(data));
+            router.push('/results');
+        });
+    }
+
+    return (
+        <>
+            <Box sx={{my: 5}}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Typography variant="h5"><b>Attributes</b></Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="h5">Address</Typography>
+                        <Typography>{formValues.address ? formValues.address : "N/A"}</Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Typography variant="h5">Bedrooms</Typography>
+                        <Typography>{formValues.bedrooms}</Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Typography variant="h5">Bathrooms</Typography>
+                        <Typography>{formValues.bathrooms}</Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Typography variant="h5">Square Feet</Typography>
+                        <Typography>{formValues.sqft}</Typography>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Typography variant="h5">Monthly Rent</Typography>
+                        <Typography>{formValues.price}</Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="h5"><b>Amenities</b></Typography>
+                    </Grid>
+                    {attributes.map(({attr, label}) => (
+                        <Grid item xs={6}>
+                            <Typography variant="h6">{label}</Typography>
+                            <Typography>{formValues[attr as keyof typeof formValues] == 1 ? 'Yes✅' :
+                                        formValues[attr as keyof typeof formValues] == 0 ? "No❌" : "Not Sure🤷‍♂️"}
+                            </Typography>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
+            <Box sx={{display:'flex', justifyContent:"flex-end"}}>
+                <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleBack}>Back</Button>
+                <Button sx={{mx:1, minWidth:100}} variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+            </Box>
+        </>
+    );
 };
 
 export default function StepForm() {
