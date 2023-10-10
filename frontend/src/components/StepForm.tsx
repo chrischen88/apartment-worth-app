@@ -138,7 +138,7 @@ const ConfirmForm = () => {
     const router = useRouter();
     const handleSubmit = () => {
         console.log(formValues);
-        fetch('http://127.0.0.1:5000/predict', {
+        fetch('http://localhost:8001/predict', {
             method: 'POST',
             body: JSON.stringify(formValues),
             headers: {

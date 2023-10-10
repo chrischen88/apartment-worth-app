@@ -27,7 +27,7 @@ areas_of_interest = [
 app = Flask(__name__)
 CORS(app)
 model = ApartmentModel(18)
-model.load_state_dict(torch.load('model_262_18f.pth'))
+model.load_state_dict(torch.load('model_262_18f.pth', map_location=torch.device('cpu')))
 model.eval()
 
 @app.route('/')
@@ -52,4 +52,4 @@ def predict():
         prediction = model(tensor)
     return jsonify({**data, 'distances': distances, 'prediction': prediction.item()})
 
-app.run(port=5000)
+app.run(host='0.0.0.0', port=5000)
