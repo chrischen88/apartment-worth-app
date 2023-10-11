@@ -12,6 +12,8 @@ services:
     container_name: frontend
     ports:
       - "8000:3000"
+      - "443:3000"
+      - "8080:3000"
     links:
       - backend
 
