@@ -36,7 +36,7 @@ const ResultsPage = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <Typography variant="h6" align='center'>
-                            With the actual rent being ${apiResponse['price']},
+                            With the actual rent being ${apiResponse['price']}, 
                             { isCheaper ? <>it is cheaper than what the model expects.</> :
                                 isWithinRange? <>it is within close range of what the model expects.</> :
                                 <>it is more expensive than what the model expects.</>
