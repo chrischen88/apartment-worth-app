@@ -1,4 +1,4 @@
-version: "1.0.0"
+version: "3"
 services:
 
   backend:
@@ -13,7 +13,5 @@ services:
     ports:
       - "8000:3000"
       - "443:3000"
-      - "8080:3000"
-    links:
-      - backend
+      - "80:3000"
 
